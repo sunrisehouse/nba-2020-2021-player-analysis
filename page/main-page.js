@@ -38,10 +38,12 @@ class MainPage {
             horizontalSelectCompEle,
             selectOptions,
         );
+        this.horizontalSelectComp.setOnChange(this.onChangeHorVerSelect);
         this.verticalSelectComp = new SelectComponent(
             verticalSelectCompEle,
             selectOptions,
         );
+        this.verticalSelectComp.setOnChange(this.onChangeHorVerSelect);
         this.scatterplotComp = new ScatterplotComponent(
             scatterplotCompEle,
         );
@@ -76,42 +78,43 @@ class MainPage {
     }
 
     onDataLoaded = () => {
-        const filteredData = this.data
+        this.filteredData = this.data
             .filter(d => this.POSITION.includes(d['Pos']));
-        const scpData = filteredData
-            .map(d => ({ x: Number(d[this.selectedHorAttr]), y: Number(d[this.selectedVerAttr]), z: d['Pos'], id: d['Player'] }));
-        this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
-
-        const bpData = scpData.map(td => ({ x: td.z, y: td.y }));
-        this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
-
-        const dtLabels = filteredData.length > 0 ? Object.keys(filteredData[0]) : [];
-        const dtData = filteredData.map(d => Object.values(d));
-        this.renderDataTable(dtData, dtLabels);
         
+        this.renderAll();
         this.radarchartComp.setData();
         this.radarchartComp.render();
     }
 
     onChangePosition = () => {
-        console.log(1)
         const checkedPosList = this.checkboxGroupComp.getChecked();
-        const filteredData = this.data
+        this.filteredData = this.data
             .filter(d => checkedPosList.includes(d['Pos']));
-        const scpData = filteredData
+
+        this.renderAll();
+    }
+
+    onChangeHorVerSelect = () => {
+        this.selectedHorAttr = this.horizontalSelectComp.getSelected();
+        this.selectedVerAttr = this.verticalSelectComp.getSelected();
+        this.renderAll();
+    }
+
+    onBrushScatterPlot = (d) => {
+
+    }
+
+    renderAll = () => {
+        const scpData = this.filteredData
             .map(d => ({ x: Number(d[this.selectedHorAttr]), y: Number(d[this.selectedVerAttr]), z: d['Pos'], id: d['Player'] }));
         this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
 
         const bpData = scpData.map(td => ({ x: td.z, y: td.y }));
         this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
 
-        const dtLabels = filteredData.length > 0 ? Object.keys(filteredData[0]) : [];
-        const dtData = filteredData.map(d => Object.values(d));
+        const dtLabels = this.filteredData.length > 0 ? Object.keys(this.filteredData[0]) : [];
+        const dtData = this.filteredData.map(d => Object.values(d));
         this.renderDataTable(dtData, dtLabels);
-    }
-
-    onBrushScatterPlot = (d) => {
-
     }
 
     renderScatterPlot = (data, horAttr, verAttr) => {

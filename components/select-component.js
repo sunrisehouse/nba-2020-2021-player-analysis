@@ -11,15 +11,27 @@ class SelectComponent {
             `
         };
     }
+
+    setOnChange = (onChange) => {
+        this.onChange = onChange;
+    }
+
+    getSelected = () => {
+        const selectEle = this.rootEle.getElementsByClassName('select-comp-select')[0];
+        return selectEle.options[selectEle.selectedIndex].value;
+    }
     
     render() {
         this.rootEle.innerHTML = `
-            <select style="${this.styles['select']}">
+            <select class="select-comp-select" style="${this.styles['select']}">
                 ${this.options.map(({ label, value }) =>
                     `<option style="${this.styles['option']}" value="${value}">${label}</option>`
                 ).join('')}
             </select>
         `;
+
+        const selectEles = this.rootEle.getElementsByClassName("select-comp-select");
+        selectEles[0].addEventListener("change", this.onChange);
     }
 }
 
