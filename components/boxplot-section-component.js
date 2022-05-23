@@ -4,33 +4,7 @@ class BoxplotSectionComponent {
         this.width = 300 - this.margin.left - this.margin.right;
         this.height = 300 - this.margin.top - this.margin.bottom;
         this.handlers = {};
-
-        element.innerHTML = `
-            <svg></svg>
-            <div class="tooltip bs-tooltip-top show" id="boxplot-tooltip" role="tooltip" style="display:none">
-                <div class="tooltip-arrow"></div>
-                <div class="tooltip-inner">
-                    Some tooltip text!
-                </div>
-            </div>
-        `;
-        
-        this.root = d3.select(element);
-        this.svg = this.root.select("svg")
-        this.tooltip = this.root.select("#boxplot-tooltip")
-        this.container = this.svg.append("g");
-        this.xAxis = this.svg.append("g");
-        this.yAxis = this.svg.append("g");
-        this.legend = this.svg.append("g");
-
-        this.xScale = d3.scaleBand();
-        this.yScale = d3.scaleLinear();
-        this.zScale = d3.scaleOrdinal().range(d3.schemeCategory10)
-        
-        this.svg
-            .attr("width", this.width + this.margin.left + this.margin.right)
-            .attr("height", this.height + this.margin.top + this.margin.bottom);
-        this.container.attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
+        this.rootEle = element;
     }
 
     setData(data, xLabel, yLabel) {
@@ -40,6 +14,36 @@ class BoxplotSectionComponent {
     }
 
     render() {
+        this.rootEle.innerHTML = `
+            <svg></svg>
+            <div class="tooltip bs-tooltip-top show" id="boxplot-tooltip" role="tooltip" style="display:none">
+                <div class="tooltip-arrow"></div>
+                <div class="tooltip-inner">
+                    Some tooltip text!
+                </div>
+            </div>
+        `;
+        
+        const root = d3.select(this.rootEle);
+        const svg = root.select("svg")
+            .attr("width", this.width + this.margin.left + this.margin.right)
+            .attr("height", this.height + this.margin.top + this.margin.bottom);
+        const tooltip = root.select("#boxplot-tooltip")
+        const container = svg.append("g")
+            .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
+
+        this.xScale = d3.scaleBand()
+            .range([0, this.width])
+            .domain([...new Set(this.data.map(d => d.x))])
+            .paddingInner(1)
+            .paddingOuter(.5);
+        this.yScale = d3.scaleLinear()
+            .domain(d3.extent(this.data, d => d.y))
+            .range([this.height, 0]);
+        this.zScale = d3.scaleOrdinal()
+            .range(d3.schemeCategory10)
+            .domain([...new Set(this.data.map(d => d.x))])
+        
         const sumstat = d3.rollup(this.data, v => {
             const q1 = d3.quantile(v.map(g => g.y).sort(d3.ascending),.25);
             const median = d3.quantile(v.map(g => g.y).sort(d3.ascending),.5);
@@ -50,25 +54,16 @@ class BoxplotSectionComponent {
             return({q1: q1, median: median, q3: q3, interQuantileRange: interQuantileRange, min: min, max: max})
         }, d => d.x);
 
-        this.xScale
-            .range([0, this.width])
-            .domain([...new Set(this.data.map(d => d.x))])
-            .paddingInner(1)
-            .paddingOuter(.5)
-        this.yScale.domain(d3.extent(this.data, d => d.y)).range([this.height, 0]);
-        this.zScale.domain([...new Set(this.data.map(d => d.x))])
-
-        this.xAxis
+        const xAxis = svg.append("g")
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top + this.height})`)
-            .call(d3.axisBottom(this.xScale))
-        
-        this.yAxis
+            .call(d3.axisBottom(this.xScale));
+        const yAxis = svg.append("g")
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
             .transition()
             .call(d3.axisLeft(this.yScale));
 
         // Show the main vertical line
-        this.container
+        container
             .selectAll("vertLines")
             .data(sumstat)
             .enter()
@@ -82,8 +77,8 @@ class BoxplotSectionComponent {
                 .transition()
 
         // rectangle for the main box
-        var boxWidth = 20;
-        this.container
+        const boxWidth = 20;
+        container
             .selectAll("boxes")
             .data(sumstat)
             .enter()
@@ -96,7 +91,7 @@ class BoxplotSectionComponent {
                 .attr("fill", d => this.zScale(d[0]))
         
         // Show the median
-        this.container
+        container
             .selectAll("medianLines")
             .data(sumstat)
             .enter()
@@ -108,7 +103,7 @@ class BoxplotSectionComponent {
                 .attr("stroke", "black")
                 .style("width", 80)
 
-        this.legend
+        const legend = svg.append("g")
             .style("display", "inline")
             .style("font-size", ".8em")
             .attr("transform", `translate(${this.width + this.margin.left + 10}, ${this.height / 2})`)

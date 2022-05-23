@@ -25,12 +25,8 @@ class ScatterplotSectionComponent {
         `;
         
         const root = d3.select(this.rootEle);
-        const svg = root.select("svg");
+
         const tooltip = root.select("#sc-tooltip")
-        const container = svg.append("g");
-        const xAxis = svg.append("g");
-        const yAxis = svg.append("g");
-        const legend = svg.append("g");
         const brush = d3.brush()
             .extent([[0, 0], [this.width, this.height]])
             .on("start brush", (event) => {
@@ -46,12 +42,14 @@ class ScatterplotSectionComponent {
         this.zScale = d3.scaleOrdinal()
             .range(d3.schemeCategory10)
             .domain([...new Set(this.data.map(d => d.z))]);
-        svg
+
+        const svg = root.select("svg")
             .attr("width", this.width + this.margin.left + this.margin.right)
             .attr("height", this.height + this.margin.top + this.margin.bottom);
-        container.attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
-        
-        container.call(brush);
+
+        const container = svg.append("g")
+            .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
+            .call(brush);
 
         this.circles = container.selectAll("circle")
             .data(this.data)
@@ -83,17 +81,17 @@ class ScatterplotSectionComponent {
             .attr("fill", d => this.zScale(d.z))
             .attr("r", 3)
 
-        xAxis
+        const xAxis = svg.append("g")
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top + this.height})`)
             .transition()
             .call(d3.axisBottom(this.xScale));
 
-        yAxis
+        const yAxis = svg.append("g")
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
             .transition()
             .call(d3.axisLeft(this.yScale));
 
-        legend
+        const legend = svg.append("g")
             .style("display", "inline")
             .style("font-size", ".8em")
             .attr("transform", `translate(${this.width + this.margin.left + 10}, ${this.height / 2})`)
