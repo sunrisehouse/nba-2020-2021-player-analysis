@@ -4,11 +4,19 @@ class RadarchartComponent {
 		this.radius = 140;
 		this.handlers = {};
 		this.rootEle = element;
+		this.color = 'rgba(255, 0, 0, 0.4)';
 	}
   
 	setData(data, label) {
 		this.data = data;
 		this.label = label;
+	}
+	setColor = (color) => {
+		this.color = color;
+	}
+	setSize = (margin, radius) => {
+		this.margin = margin;
+		this.radius = radius;
 	}
   
 	render() {
@@ -78,11 +86,11 @@ class RadarchartComponent {
 				.attr("x", (_, d_idx) => center + this.scale(1.1)  * Math.cos(-Math.PI/2 + theta * d_idx))
 				.attr("y", (_, d_idx) => center + this.scale(1.1)  * Math.sin(-Math.PI/2 + theta * d_idx));
 		
-				if (this.data.length > 0) {
+		if (this.data.length > 0) {
 			container
 				.append("polygon")
 					.attr("points", this.data.reduce((acc, d, d_idx) => acc + `${center + this.scale(d) * Math.cos(-Math.PI/2 + theta * d_idx)},${center + this.scale(d) * Math.sin(-Math.PI/2 + theta * d_idx)} `, ""))
-					.attr("style", "fill:rgba(255, 0, 0, 0.4);stroke:purple;stroke-width:1")
+					.attr("style", `fill:${this.color};stroke:${this.color};stroke-width:1`)
 		}
 
 

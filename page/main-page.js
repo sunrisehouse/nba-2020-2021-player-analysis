@@ -58,9 +58,15 @@ class MainPage {
         this.leftRadarchartComp = new RadarchartComponent(
             leftRadarchartCompEle,
         );
+        this.leftRadarchartComp.setColor("rgba(140, 192, 222, 0.9)");
         this.rightRadarchartComp = new RadarchartComponent(
             rightRadarchartCompEle,
         );
+        if (window.innerWidth < 1000) {
+            this.leftRadarchartComp.setSize(24, 50);
+            this.rightRadarchartComp.setSize(24, 50);
+        }
+        this.rightRadarchartComp.setColor("rgba(244, 191, 191, 0.9)");
         this.datatableComp = new DatatableComponent(
             datatableCompEle,
         );

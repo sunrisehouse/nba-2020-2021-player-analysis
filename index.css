@@ -78,6 +78,18 @@ section {
     color: #000000;
 }
 
+.radarchart-section {
+    display: flex;
+}
+
+.radarchart-section .left,
+.radarchart-section .right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 #radarchart-comp {
     overflow: hidden;
 }
