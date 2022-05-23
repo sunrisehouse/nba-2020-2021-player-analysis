@@ -1,4 +1,4 @@
-class ScatterplotSectionComponent {
+class ScatterplotComponent {
     constructor(element) {
         this.margin = {top: 10, right: 100, bottom: 30, left: 40};
         this.width = 300 - this.margin.left - this.margin.right;
@@ -25,7 +25,6 @@ class ScatterplotSectionComponent {
         `;
         
         const root = d3.select(this.rootEle);
-
         const tooltip = root.select("#sc-tooltip")
         const brush = d3.brush()
             .extent([[0, 0], [this.width, this.height]])
@@ -121,4 +120,4 @@ class ScatterplotSectionComponent {
     }
 }
 
-export default ScatterplotSectionComponent;
+export default ScatterplotComponent;

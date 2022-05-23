@@ -1,4 +1,4 @@
-class BoxplotSectionComponent {
+class BoxplotComponent {
     constructor(element) {
         this.margin = {top: 10, right: 100, bottom: 100, left: 40};
         this.width = 300 - this.margin.left - this.margin.right;
@@ -69,8 +69,8 @@ class BoxplotSectionComponent {
             .enter()
             .append("line")
                 .attr("x1", d => this.xScale(d[0]))
-                .attr("x2", d => this.xScale(d[0]))
                 .attr("y1", d => this.yScale(d[1].min))
+                .attr("x2", d => this.xScale(d[0]))
                 .attr("y2", d => this.yScale(d[1].max))
                 .attr("stroke", "black")
                 .style("width", 40)
@@ -97,8 +97,8 @@ class BoxplotSectionComponent {
             .enter()
             .append("line")
                 .attr("x1", d => this.xScale(d[0]) - boxWidth/2)
-                .attr("x2", d => this.xScale(d[0]) + boxWidth/2)
                 .attr("y1", d => this.yScale(d[1].median))
+                .attr("x2", d => this.xScale(d[0]) + boxWidth/2)
                 .attr("y2", d => this.yScale(d[1].median))
                 .attr("stroke", "black")
                 .style("width", 80)
@@ -111,4 +111,4 @@ class BoxplotSectionComponent {
     }
 }
 
-export default BoxplotSectionComponent;
+export default BoxplotComponent;

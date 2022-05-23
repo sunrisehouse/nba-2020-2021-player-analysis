@@ -1,4 +1,4 @@
-class SelectSectionComponent {
+class SelectComponent {
     constructor(element, title1, option1_list, title2, option2_list) {
         this.rootEle = element;
         this.title1 = title1;
@@ -38,4 +38,4 @@ class SelectSectionComponent {
     }
 }
 
-export default SelectSectionComponent;
+export default SelectComponent;

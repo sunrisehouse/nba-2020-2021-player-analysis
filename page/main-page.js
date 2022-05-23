@@ -1,8 +1,10 @@
 import HeaderComponent from '../components/header-component.js';
-import CheckboxSectionComponent from '../components/checkbox-section-component.js';
-import SelectSectionComponent from '../components/select-section-component.js';
-import ScatterplotSectionComponent from '../components/scatterplot-section-component.js'
-import BoxplotSectionComponent from '../components/boxplot-section-component.js';
+import CheckboxGroupComponent from '../components/checkbox-group-component.js';
+import SelectComponent from '../components/select-component.js';
+import ScatterplotComponent from '../components/scatterplot-component.js'
+import BoxplotComponent from '../components/boxplot-component.js';
+import RadarchartComponent from '../components/radarchart-component.js';
+import DatatableComponent from '../components/datatable-component.js';
 
 class MainPage {
     POSITION = ['PG', 'SG', 'SF', 'PF', 'C']
@@ -14,29 +16,36 @@ class MainPage {
         const horVerSelectSectionEle = document.getElementById('hor-ver-select-section');
         const scatterplotSectionEle = document.getElementById('scatterplot-section');
         const boxplotSectionEle = document.getElementById('boxplot-section');
+        const radarchartSectionEle = document.getElementById('radarchart-section');
+        const datatableSectionEle = document.getElementById('datatable-section');
+
         const selectOptions = this.ATTRIBUTES.map((name) => ({ label: name, value: name }));
 
         this.headerComp = new HeaderComponent(
             headerEle,
             'NBA 2020-2021 Player Analysis',
         );
-        this.checkboxSectionComp = new CheckboxSectionComponent(
+        this.checkboxSectionComp = new CheckboxGroupComponent(
             positionCheckSectionEle,
             'Position', this.POSITION,
             this.POSITION.map((_, index) => index),
         );
-        this.selectSectionComp = new SelectSectionComponent(
+        this.selectSectionComp = new SelectComponent(
             horVerSelectSectionEle,
             'Horizontal', selectOptions, 'Vertical', selectOptions,
         );
-        this.scatterplotSectionComp = new ScatterplotSectionComponent(
+        this.scatterplotSectionComp = new ScatterplotComponent(
             scatterplotSectionEle,
         );
-        this.boxplotSectionComp = new BoxplotSectionComponent(
+        this.boxplotSectionComp = new BoxplotComponent(
             boxplotSectionEle,
         );
-
-        
+        this.radarchartSectionComp = new RadarchartComponent(
+            radarchartSectionEle,
+        );
+        this.datatableSectionComp = new DatatableComponent(
+            datatableSectionEle,
+        );
 
         this.headerComp.render();
         this.checkboxSectionComp.render();
@@ -62,8 +71,13 @@ class MainPage {
                 'hell2',
                 'hi2',
             );
+            this.radarchartSectionComp.setData();
+            this.datatableSectionComp.setData([[1, 2, 3], [4, 5, 6]], ['a', 'b', 'c']);
+
             this.scatterplotSectionComp.render();
             this.boxplotSectionComp.render();
+            this.radarchartSectionComp.render();
+            this.datatableSectionComp.render();
         } catch (e) {
             console.log(e)
             alert("Data 를 불러들이는데 실패했습니다.");

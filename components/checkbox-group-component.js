@@ -1,4 +1,4 @@
-class CheckboxSectionComponent {
+class CheckboxGroupComponent {
     constructor(element, title, labels) {
         this.rootEle = element;
         this.title = title;
@@ -30,4 +30,4 @@ class CheckboxSectionComponent {
     }
 }
 
-export default CheckboxSectionComponent;
+export default CheckboxGroupComponent;
