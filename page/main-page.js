@@ -26,34 +26,35 @@ class MainPage {
             headerEle,
             'NBA 2020-2021 Player Analysis',
         );
-        this.checkboxCompComp = new CheckboxGroupComponent(
+        this.checkboxComp = new CheckboxGroupComponent(
             positionCheckGroupCompEle,
             this.POSITION, this.POSITION.map((_, index) => index),
         );
-        this.selectCompComp = new SelectComponent(
+        this.horizontalSelectComp = new SelectComponent(
             horizontalSelectCompEle,
             selectOptions,
         );
-        this.selectCompComp = new SelectComponent(
+        this.verticalSelectComp = new SelectComponent(
             verticalSelectCompEle,
             selectOptions,
         );
-        this.scatterplotCompComp = new ScatterplotComponent(
+        this.scatterplotComp = new ScatterplotComponent(
             scatterplotCompEle,
         );
-        this.boxplotCompComp = new BoxplotComponent(
+        this.boxplotComp = new BoxplotComponent(
             boxplotCompEle,
         );
-        this.radarchartCompComp = new RadarchartComponent(
+        this.radarchartComp = new RadarchartComponent(
             radarchartCompEle,
         );
-        this.datatableCompComp = new DatatableComponent(
+        this.datatableComp = new DatatableComponent(
             datatableCompEle,
         );
 
         this.headerComp.render();
-        this.checkboxCompComp.render();
-        this.selectCompComp.render();
+        this.checkboxComp.render();
+        this.horizontalSelectComp.render();
+        this.verticalSelectComp.render();
         this.loadData();
     }
 
@@ -63,25 +64,25 @@ class MainPage {
             const tempData = data
                 .filter(d => this.POSITION.includes(d['Pos']))
                 .map(d => ({ x: Number(d['3P']), y: Number(d['FG']), z: d['Pos'], id: d['Player'] }))
-            this.scatterplotCompComp.on("brush", (d) => {
+            this.scatterplotComp.on("brush", (d) => {
             });
-            this.scatterplotCompComp.setData(
+            this.scatterplotComp.setData(
                 tempData,
                 'hell',
                 'hi',
             );
-            this.boxplotCompComp.setData(
+            this.boxplotComp.setData(
                 tempData.map(td => ({ x: td.z, y: td.y })),
                 'hell2',
                 'hi2',
             );
-            this.radarchartCompComp.setData();
-            this.datatableCompComp.setData([[1, 2, 3], [4, 5, 6]], ['a', 'b', 'c']);
+            this.radarchartComp.setData();
+            this.datatableComp.setData([[1, 2, 3], [4, 5, 6]], ['a', 'b', 'c']);
 
-            this.scatterplotCompComp.render();
-            this.boxplotCompComp.render();
-            this.radarchartCompComp.render();
-            this.datatableCompComp.render();
+            this.scatterplotComp.render();
+            this.boxplotComp.render();
+            this.radarchartComp.render();
+            this.datatableComp.render();
         } catch (e) {
             console.log(e)
             alert("Data 를 불러들이는데 실패했습니다.");
