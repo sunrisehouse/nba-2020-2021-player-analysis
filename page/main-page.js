@@ -21,14 +21,17 @@ class MainPage {
         const datatableCompEle = document.getElementById('datatable-comp');
 
         const selectOptions = this.ATTRIBUTES.map((name) => ({ label: name, value: name }));
+        this.selectedHorAttr = '3P';
+        this.selectedVerAttr = '2P';
 
         this.headerComp = new HeaderComponent(
             headerEle,
             'NBA 2020-2021 Player Analysis',
         );
-        this.checkboxComp = new CheckboxGroupComponent(
+        this.checkboxGroupComp = new CheckboxGroupComponent(
             positionCheckGroupCompEle,
-            this.POSITION, this.POSITION.map((_, index) => index),
+            this.POSITION,
+            this.POSITION.map((_, index) => index),
         );
         this.horizontalSelectComp = new SelectComponent(
             horizontalSelectCompEle,
@@ -52,42 +55,68 @@ class MainPage {
         );
 
         this.headerComp.render();
-        this.checkboxComp.render();
+        this.checkboxGroupComp.render();
         this.horizontalSelectComp.render();
         this.verticalSelectComp.render();
         this.loadData();
     }
 
-    async loadData() {
+    loadData = async () => {
         try {
-            const data = await d3.csv("./data/nba2021_per_game.csv")
-            const tempData = data
-                .filter(d => this.POSITION.includes(d['Pos']))
-                .map(d => ({ x: Number(d['3P']), y: Number(d['FG']), z: d['Pos'], id: d['Player'] }))
-            this.scatterplotComp.on("brush", (d) => {
-            });
-            this.scatterplotComp.setData(
-                tempData,
-                'hell',
-                'hi',
-            );
-            this.boxplotComp.setData(
-                tempData.map(td => ({ x: td.z, y: td.y })),
-                'hell2',
-                'hi2',
-            );
-            this.radarchartComp.setData();
-            this.datatableComp.setData([[1, 2, 3], [4, 5, 6]], ['a', 'b', 'c']);
+            this.data = await d3.csv("./data/nba2021_per_game.csv");
 
-            this.scatterplotComp.render();
-            this.boxplotComp.render();
-            this.radarchartComp.render();
-            this.datatableComp.render();
+            this.onDataLoaded();
         } catch (e) {
             console.log(e)
             alert("Data 를 불러들이는데 실패했습니다.");
             return;
         }
+    }
+
+    onDataLoaded = () => {
+        const tempData = this.data
+            .filter(d => this.POSITION.includes(d['Pos']))
+            .map(d => ({ x: Number(d['3P']), y: Number(d['FG']), z: d['Pos'], id: d['Player'] }))
+        this.scatterplotComp.on("brush", (d) => {
+        });
+        this.scatterplotComp.setData(
+            tempData,
+            'hell',
+            'hi',
+        );
+        this.boxplotComp.setData(
+            tempData.map(td => ({ x: td.z, y: td.y })),
+            'hell2',
+            'hi2',
+        );
+        this.radarchartComp.setData();
+        this.datatableComp.setData([[1, 2, 3], [4, 5, 6]], ['a', 'b', 'c']);
+
+        this.checkboxGroupComp.setOnChange(this.onChangePosition);
+
+        this.scatterplotComp.render();
+        this.boxplotComp.render();
+        this.radarchartComp.render();
+        this.datatableComp.render();
+    }
+
+    onChangePosition = () => {
+        const checkedPosList = this.checkboxGroupComp.getChecked();
+        const filteredData = this.data
+            .filter(d => checkedPosList.includes(d['Pos']));
+        this.renderScatterPlot(filteredData, this.selectedHorAttr, this.selectedVerAttr);
+    }
+
+    renderScatterPlot = (filteredData, horAttr, verAttr) => {
+        const data = filteredData
+            .map(d => ({ x: Number(d['3P']), y: Number(d['FG']), z: d['Pos'], id: d['Player'] }));
+        
+        this.scatterplotComp.setData(
+            data,
+            horAttr,
+            verAttr,
+        );
+        this.scatterplotComp.render();
     }
 }
 

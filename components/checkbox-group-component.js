@@ -3,20 +3,34 @@ class CheckboxGroupComponent {
         this.rootEle = element;
         this.labels = labels;
         this.styles = {
-            ul: `
-                display: flex;
-            `,
-            li: `
-                margin-right: 12px;
-            `
+            ul: `display: flex;`,
+            li: `margin-right: 12px;`
         };
     }
+
+    setOnChange = (onChange) => {
+        const inputEles = this.rootEle.getElementsByClassName("checkbox-group-comp-input");
+        for (let i = 0; i < inputEles.length; i++) {
+            inputEles[i].addEventListener("change", onChange);
+        }
+    }
+
+    getChecked = () => {
+        const checkedList = [];
+        const inputEles = this.rootEle.getElementsByClassName("checkbox-group-comp-input");
+        for (let i = 0; i < inputEles.length; i++) {
+            if (inputEles[i].checked) {
+                checkedList.push(inputEles[i].value);
+            }
+        }
+        return checkedList;
+    }
     
-    render() {
+    render = () => {
         this.rootEle.innerHTML = `
             <ul style="${this.styles['ul']}">
-                ${this.labels.map((label, ) =>
-                    `<li style="${this.styles['li']}"><label><input type="checkbox" name="position" value="${label}">${label}</label></li>`
+                ${this.labels.map((label) =>
+                    `<li style="${this.styles['li']}"><label><input class="checkbox-group-comp-input" type="checkbox" value="${label}">${label}</label></li>`
                 ).join('')}
             </ul>
         `;
