@@ -33,6 +33,7 @@ class MainPage {
             this.POSITION,
             this.POSITION.map((_, index) => index),
         );
+        this.checkboxGroupComp.setOnChange(this.onChangePosition);
         this.horizontalSelectComp = new SelectComponent(
             horizontalSelectCompEle,
             selectOptions,
@@ -44,6 +45,7 @@ class MainPage {
         this.scatterplotComp = new ScatterplotComponent(
             scatterplotCompEle,
         );
+        this.scatterplotComp.on("brush", this.onBrushScatterPlot);
         this.boxplotComp = new BoxplotComponent(
             boxplotCompEle,
         );
@@ -74,33 +76,25 @@ class MainPage {
     }
 
     onDataLoaded = () => {
-        const tempData = this.data
-            .filter(d => this.POSITION.includes(d['Pos']))
-            .map(d => ({ x: Number(d['3P']), y: Number(d['FG']), z: d['Pos'], id: d['Player'] }))
-        this.scatterplotComp.on("brush", (d) => {
-        });
-        this.scatterplotComp.setData(
-            tempData,
-            'hell',
-            'hi',
-        );
-        this.boxplotComp.setData(
-            tempData.map(td => ({ x: td.z, y: td.y })),
-            'hell2',
-            'hi2',
-        );
+        const filteredData = this.data
+            .filter(d => this.POSITION.includes(d['Pos']));
+        const scpData = filteredData
+            .map(d => ({ x: Number(d[this.selectedHorAttr]), y: Number(d[this.selectedVerAttr]), z: d['Pos'], id: d['Player'] }));
+        this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
+
+        const bpData = scpData.map(td => ({ x: td.z, y: td.y }));
+        this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
+
+        const dtLabels = filteredData.length > 0 ? Object.keys(filteredData[0]) : [];
+        const dtData = filteredData.map(d => Object.values(d));
+        this.renderDataTable(dtData, dtLabels);
+        
         this.radarchartComp.setData();
-        this.datatableComp.setData([[1, 2, 3], [4, 5, 6]], ['a', 'b', 'c']);
-
-        this.checkboxGroupComp.setOnChange(this.onChangePosition);
-
-        this.scatterplotComp.render();
-        this.boxplotComp.render();
         this.radarchartComp.render();
-        this.datatableComp.render();
     }
 
     onChangePosition = () => {
+        console.log(1)
         const checkedPosList = this.checkboxGroupComp.getChecked();
         const filteredData = this.data
             .filter(d => checkedPosList.includes(d['Pos']));
@@ -114,6 +108,10 @@ class MainPage {
         const dtLabels = filteredData.length > 0 ? Object.keys(filteredData[0]) : [];
         const dtData = filteredData.map(d => Object.values(d));
         this.renderDataTable(dtData, dtLabels);
+    }
+
+    onBrushScatterPlot = (d) => {
+
     }
 
     renderScatterPlot = (data, horAttr, verAttr) => {

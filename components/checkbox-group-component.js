@@ -9,10 +9,7 @@ class CheckboxGroupComponent {
     }
 
     setOnChange = (onChange) => {
-        const inputEles = this.rootEle.getElementsByClassName("checkbox-group-comp-input");
-        for (let i = 0; i < inputEles.length; i++) {
-            inputEles[i].addEventListener("change", onChange);
-        }
+        this.onChange = onChange;
     }
 
     getChecked = () => {
@@ -34,6 +31,11 @@ class CheckboxGroupComponent {
                 ).join('')}
             </ul>
         `;
+
+        const inputEles = this.rootEle.getElementsByClassName("checkbox-group-comp-input");
+        for (let i = 0; i < inputEles.length; i++) {
+            inputEles[i].addEventListener("change", this.onChange);
+        }
     }
 }
 
