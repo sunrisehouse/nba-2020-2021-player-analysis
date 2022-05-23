@@ -1,11 +1,12 @@
 class CheckboxGroupComponent {
-    constructor(element, labels) {
+    constructor(element, labels, initialValues) {
         this.rootEle = element;
         this.labels = labels;
         this.styles = {
             ul: `display: flex;`,
             li: `margin-right: 12px;`
         };
+        this.initialValues = initialValues;
     }
 
     setOnChange = (onChange) => {
@@ -24,10 +25,20 @@ class CheckboxGroupComponent {
     }
     
     render = () => {
+        console.log(this.initialValues.includes('PG'))
         this.rootEle.innerHTML = `
             <ul style="${this.styles['ul']}">
                 ${this.labels.map((label) =>
-                    `<li style="${this.styles['li']}"><label><input class="checkbox-group-comp-input" type="checkbox" value="${label}">${label}</label></li>`
+                    `<li style="${this.styles['li']}">
+                        <label>
+                        <input class="checkbox-group-comp-input"
+                            type="checkbox"
+                            value="${label}"
+                            ${this.initialValues.includes(label) ? "checked" : ""}
+                        >
+                            ${label}
+                        </label>
+                    </li>`
                 ).join('')}
             </ul>
         `;

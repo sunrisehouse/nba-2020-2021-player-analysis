@@ -1,5 +1,5 @@
 class SelectComponent {
-    constructor(element, options) {
+    constructor(element, options, initialValue) {
         this.rootEle = element;
         this.options = options;
         this.styles = {
@@ -10,6 +10,7 @@ class SelectComponent {
                 margin-right: 12px;
             `
         };
+        this.initialValue = initialValue;
     }
 
     setOnChange = (onChange) => {
@@ -23,9 +24,9 @@ class SelectComponent {
     
     render() {
         this.rootEle.innerHTML = `
-            <select class="select-comp-select" style="${this.styles['select']}">
+            <select class="select-comp-select" style="${this.styles['select']}" >
                 ${this.options.map(({ label, value }) =>
-                    `<option style="${this.styles['option']}" value="${value}">${label}</option>`
+                    `<option style="${this.styles['option']}" value="${value}" ${this.initialValue == value ? "selected" : ''}>${label}</option>`
                 ).join('')}
             </select>
         `;

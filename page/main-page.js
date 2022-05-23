@@ -9,6 +9,7 @@ import DatatableComponent from '../components/datatable-component.js';
 class MainPage {
     POSITION = ['PG', 'SG', 'SF', 'PF', 'C']
     ATTRIBUTES = ['Player', 'Pos', 'Age', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGA', 'FG%', '3P', '3PA', '3P%', '2P', '2PA', '2P%', 'eFG%', 'FT', 'FTA', 'FT%', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS']
+    CATEGORICAL_ATTRIBUTES = ['Player', 'Pos', 'Tm']
     
     COMPARED_ATTRS = ['3P%', '2P%', 'AST', 'TRB', 'PTS']
     selectedHorAttr = '3P';
@@ -28,7 +29,7 @@ class MainPage {
         this.leftPlayerNameEle = document.getElementById('left-player-name');
         this.rightPlayerNameEle = document.getElementById('right-player-name');
 
-        const selectOptions = this.ATTRIBUTES.map((name) => ({ label: name, value: name }));
+        const selectOptions = this.ATTRIBUTES.filter(attr => !this.CATEGORICAL_ATTRIBUTES.includes(attr)).map((name) => ({ label: name, value: name }));
 
         this.headerComp = new HeaderComponent(
             headerEle,
@@ -37,17 +38,19 @@ class MainPage {
         this.checkboxGroupComp = new CheckboxGroupComponent(
             positionCheckGroupCompEle,
             this.POSITION,
-            this.POSITION.map((_, index) => index),
+            this.POSITION,
         );
         this.checkboxGroupComp.setOnChange(this.onChangePosition);
         this.horizontalSelectComp = new SelectComponent(
             horizontalSelectCompEle,
             selectOptions,
+            this.selectedHorAttr,
         );
         this.horizontalSelectComp.setOnChange(this.onChangeHorVerSelect);
         this.verticalSelectComp = new SelectComponent(
             verticalSelectCompEle,
             selectOptions,
+            this.selectedVerAttr,
         );
         this.verticalSelectComp.setOnChange(this.onChangeHorVerSelect);
         this.scatterplotComp = new ScatterplotComponent(
