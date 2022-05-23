@@ -160,7 +160,7 @@ class BoxplotComponent {
             .attr("font-weight", "bold")
             .text(`${this.yLabel}`);
 
-        if (this.middleLineData1) {
+        if (this.data.length > 0 && this.middleLineData1) {
             svg      
                 .append("line")
                     .attr("x1", this.margin.left)
@@ -170,7 +170,7 @@ class BoxplotComponent {
                     .attr("stroke", this.middleLineData1.color)
                     .style("stroke-width", 3)
         }
-        if (this.middleLineData2) {
+        if (this.data.length > 0 && this.middleLineData2) {
             svg      
                 .append("line")
                     .attr("x1", this.margin.left)
