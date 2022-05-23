@@ -89,6 +89,34 @@ class BoxplotComponent {
                 .attr("width", boxWidth)
                 .attr("stroke", "black")
                 .attr("fill", d => this.zScale(d[0]))
+            .on("mouseover", (e, d) => {
+                tooltip.select(".tooltip-inner")
+                    .html(`
+                        <div class="stat-tooltip">
+                            <h5 class="id">${d[0]}</h5>
+                            min: ${Math.round(d[1].min*1000)/1000}<br />
+                            max: ${Math.round(d[1].max*1000)/1000}<br />
+                            median: ${Math.round(d[1].median*1000)/1000}<br />
+                            q1: ${Math.round(d[1].q1*1000)/1000}<br />
+                            q3: ${Math.round(d[1].q3*1000)/1000}<br />
+                        </div>
+                    `);
+                Popper.createPopper(e.target, tooltip.node(), {
+                    placement: 'top',
+                    modifiers: [
+                        {
+                            name: 'arrow',
+                            options: {
+                                element: tooltip.select(".tooltip-arrow").node(),
+                            },
+                        },
+                    ],
+                });
+                tooltip.style("display", "block");
+            })
+            .on("mouseout", (d) => {
+                tooltip.style("display", "none");
+            })
         
         // Show the median
         container

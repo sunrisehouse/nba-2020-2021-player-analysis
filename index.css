@@ -170,6 +170,18 @@ section {
     font-weight: 600;
 }
 
+.stat-tooltip {
+    padding: 8px;
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 12px;
+}
+.stat-tooltip .id {
+    font-size: 16px;
+    font-weight: 600;
+}
+
 /* .brushed {
     stroke-width: 1;
     stroke: gray;
