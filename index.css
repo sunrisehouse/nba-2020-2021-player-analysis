@@ -77,6 +77,10 @@ section {
     color: #000000;
 }
 
+#radarchart-comp {
+    overflow: hidden;
+}
+
 /* .brushed {
     stroke-width: 1;
     stroke: gray;
