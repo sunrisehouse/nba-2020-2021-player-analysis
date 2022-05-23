@@ -73,6 +73,7 @@ class RadarchartComponent {
 			.enter()
 			.append("text")
 				.attr("font-size", 12)
+				.attr("font-weight", "bold")
 				.style("text-anchor", (_, d_idx) => {
 					if (d_idx === 0 || d_idx === this.data.length / 2) {
 						return "middle";
