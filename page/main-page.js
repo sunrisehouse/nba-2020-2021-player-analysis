@@ -12,9 +12,11 @@ class MainPage {
     CATEGORICAL_ATTRIBUTES = ['Player', 'Pos', 'Tm']
     
     COMPARED_ATTRS = ['3P%', '2P%', 'AST', 'TRB', 'PTS']
-    selectedHorAttr = '3P';
-    selectedVerAttr = '2P';
+    selectedHorAttr = '3P'
+    selectedVerAttr = '2P'
     isLeftTurn = true;
+    LEFT_COLOR = "rgba(140, 192, 222, 0.9)"
+    RIGHT_COLOR = "rgba(244, 191, 191, 0.9)"
 
     constructor() {
         const headerEle = document.getElementById('header');
@@ -63,7 +65,7 @@ class MainPage {
         this.leftRadarchartComp = new RadarchartComponent(
             leftRadarchartCompEle,
         );
-        this.leftRadarchartComp.setColor("rgba(140, 192, 222, 0.9)");
+        this.leftRadarchartComp.setColor(this.LEFT_COLOR);
         this.rightRadarchartComp = new RadarchartComponent(
             rightRadarchartCompEle,
         );
@@ -71,7 +73,7 @@ class MainPage {
             this.leftRadarchartComp.setSize(24, 50);
             this.rightRadarchartComp.setSize(24, 50);
         }
-        this.rightRadarchartComp.setColor("rgba(244, 191, 191, 0.9)");
+        this.rightRadarchartComp.setColor(this.RIGHT_COLOR);
         this.datatableComp = new DatatableComponent(
             datatableCompEle,
         );
@@ -111,14 +113,13 @@ class MainPage {
         this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
 
         const bpData = this.makeBpData(this.posFilteredData);
-        console.log(bpData)
-        this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
+        this.renderBoxPlot(bpData);
 
         const dtLabels = this.makeDtLabels(this.posFilteredData);
         const dtData = this.makeDtData(this.posFilteredData);
         this.renderDataTable(dtData, dtLabels);
-        this.rendarRadarChart([], true);
-        this.rendarRadarChart([], false);
+        this.renderRadarChart([], true);
+        this.renderRadarChart([], false);
     }
 
     onChangePosition = () => {
@@ -130,7 +131,7 @@ class MainPage {
         this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
 
         const bpData = this.makeBpData(this.posFilteredData);
-        this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
+        this.renderBoxPlot(bpData);
 
         const dtLabels = this.makeDtLabels(this.posFilteredData);
         const dtData = this.makeDtData(this.posFilteredData);
@@ -142,21 +143,19 @@ class MainPage {
         this.selectedVerAttr = this.verticalSelectComp.getSelected();
         const scpData = this.makeScpData(this.posFilteredData);
         this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
-
-        const bpData = this.makeBpData(this.posFilteredData);
-        this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
     }
 
     onScatterPlotCircleClicked = (_, clickedData) => {
-        const d = this.posFilteredData.find(d => d.Player == clickedData.id);
-        const data = this.COMPARED_ATTRS.map((attr) => Number(d[attr]))
-            .map((item, idx) => this.getAttrNormDistributionValueFuncs[idx](item));
-        this.rendarRadarChart(data, this.isLeftTurn);
-        if (this.isLeftTurn) {
-            this.leftPlayerNameEle.innerText = clickedData.id;
-        } else {
-            this.rightPlayerNameEle.innerText = clickedData.id;
-        }
+        const playerName = clickedData.id;
+        const originData = this.posFilteredData.find(pfd => pfd['Player'] == playerName);
+
+        const bpData = this.makeBpData(this.posFilteredData);
+        this.renderBoxPlot(bpData, this.isLeftTurn, this.makePER(originData));
+
+        const data = this.COMPARED_ATTRS.map((attr, idx) => this.getAttrNormDistributionValueFuncs[idx](Number(originData[attr])));
+        this.renderRadarChart(data, this.isLeftTurn);
+        if (this.isLeftTurn) this.leftPlayerNameEle.innerText = playerName;
+        else this.rightPlayerNameEle.innerText = playerName;
         this.isLeftTurn = !this.isLeftTurn;
     }
 
@@ -171,21 +170,24 @@ class MainPage {
     // }
 
     onDataTableRowClick = (d, labels) => {
-        const data = this.COMPARED_ATTRS.map((attr) => Number(d[labels.findIndex(l => l == attr)]))
-            .map((item, idx) => this.getAttrNormDistributionValueFuncs[idx](item));
-        this.rendarRadarChart(data, this.isLeftTurn);
-        if (this.isLeftTurn) {
-            this.leftPlayerNameEle.innerText = d[0];
-        } else {
-            this.rightPlayerNameEle.innerText = d[0];
-        }
+        const playerName = d[0]
+        const originData = this.posFilteredData.find(pfd => pfd['Player'] == playerName);
+
+        const bpData = this.makeBpData(this.posFilteredData);
+        this.renderBoxPlot(bpData, this.isLeftTurn, this.makePER(originData));
+
+        const data = this.COMPARED_ATTRS.map((attr, idx) => this.getAttrNormDistributionValueFuncs[idx](Number(originData[attr])));
+        this.renderRadarChart(data, this.isLeftTurn);
+        if (this.isLeftTurn) this.leftPlayerNameEle.innerText = playerName;
+        else this.rightPlayerNameEle.innerText = playerName;
         this.isLeftTurn = !this.isLeftTurn;
     }
 
     makeScpData = d => d.map(d => ({ x: Number(d[this.selectedHorAttr]), y: Number(d[this.selectedVerAttr]), z: d['Pos'], id: d['Player'] }));
-    makeBpData = d => d.map(d => ({ x: d['Pos'], y: Number(d['3P%']) + Number(d['2P%']) + Number(d['TRB']) + Number(d['STL'])*0.5 + Number(d['BLK'])*0.5 }));
+    makeBpData = d => d.map(d => ({ x: d['Pos'], y: this.makePER(d) }));
     makeDtLabels = d => d.length > 0 ? Object.keys(d[0]) : [];
     makeDtData = d => d.map(d => Object.values(d));
+    makePER = d => Number(d['3P%']) + Number(d['2P%']) + Number(d['TRB']) + Number(d['STL'])*0.5 + Number(d['BLK'])*0.5;
 
     renderScatterPlot = (data, horAttr, verAttr) => {
         this.scatterplotComp.setData(
@@ -196,12 +198,18 @@ class MainPage {
         this.scatterplotComp.render();
     }
     
-    renderBoxPlot = (data) => {
+    renderBoxPlot = (data, isLeft, value) => {
         this.boxplotComp.setData(
             data,
             "Pos",
             "PER",
         );
+
+        if (value) {
+            if (isLeft) this.boxplotComp.setMiddleLine1({ y: value, color: this.LEFT_COLOR });
+            else this.boxplotComp.setMiddleLine2({ y: value , color: this.RIGHT_COLOR });
+        }
+        
         this.boxplotComp.render();
     };
 
@@ -210,7 +218,7 @@ class MainPage {
         this.datatableComp.render();
     }
 
-    rendarRadarChart = (data, isLeft) => {
+    renderRadarChart = (data, isLeft) => {
         if (isLeft) {
             this.leftRadarchartComp.setData(data, this.COMPARED_ATTRS);
             this.leftRadarchartComp.render();

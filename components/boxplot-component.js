@@ -12,6 +12,13 @@ class BoxplotComponent {
         this.xLabel = xLabel;
         this.yLabel = yLabel;
     }
+    setMiddleLine1 = (middleLineData1) => {
+        this.middleLineData1 = middleLineData1;
+    }
+
+    setMiddleLine2 = (middleLineData2) => {
+        this.middleLineData2 = middleLineData2;
+    }
 
     render() {
         this.rootEle.innerHTML = `
@@ -152,6 +159,27 @@ class BoxplotComponent {
             .attr("font-size", "14px")
             .attr("font-weight", "bold")
             .text(`${this.yLabel}`);
+
+        if (this.middleLineData1) {
+            svg      
+                .append("line")
+                    .attr("x1", this.margin.left)
+                    .attr("y1", this.yScale(this.middleLineData1.y))
+                    .attr("x2", this.margin.left + this.width)
+                    .attr("y2", this.yScale(this.middleLineData1.y))
+                    .attr("stroke", this.middleLineData1.color)
+                    .style("stroke-width", 3)
+        }
+        if (this.middleLineData2) {
+            svg      
+                .append("line")
+                    .attr("x1", this.margin.left)
+                    .attr("y1", this.yScale(this.middleLineData2.y))
+                    .attr("x2", this.margin.left + this.width)
+                    .attr("y2", this.yScale(this.middleLineData2.y))
+                    .attr("stroke", this.middleLineData2.color)
+                    .style("stroke-width", 3)
+        }
     }
 }
 
