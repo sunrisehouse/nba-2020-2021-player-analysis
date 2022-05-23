@@ -55,7 +55,16 @@ class ScatterplotComponent {
             .join("circle")
             .on("mouseover", (e, d) => {
                 tooltip.select(".tooltip-inner")
-                    .html(`${this.xLabel}: ${d.x}<br />${this.yLabel}: ${d.y}`);
+                    .html(`
+                        <div class="player-tooltip">
+                        <img class="profile-image" src="./images/curry.png" />
+                        <div class="profile-description">
+                            <span class="id">${d.id}</span>
+                            <br />${this.xLabel}: ${d.x}
+                            <br />${this.yLabel}: ${d.y}
+                        </div>
+                        </div>
+                    `);
                 Popper.createPopper(e.target, tooltip.node(), {
                     placement: 'top',
                     modifiers: [
