@@ -138,6 +138,9 @@ section h3 {
 
 #left-player-name,
 #right-player-name {
+    color: #ffffff;
+    padding: 4px 8px;
+    border-radius: 4px;
     font-size: 16px;
     margin-bottom: 12px;
     display: inline-block;
