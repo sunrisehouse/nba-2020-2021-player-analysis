@@ -1,6 +1,8 @@
-class CheckBoxSection {
-    constructor(id, checkBoxeLabels) {
-        this.rootEle = document.getElementById(id);
+class CheckboxSectionComponent {
+    constructor(element, title, labels) {
+        this.rootEle = element;
+        this.title = title;
+        this.labels = labels;
         this.styles = {
             h3: `
                 font-size: 20px;
@@ -12,15 +14,14 @@ class CheckBoxSection {
                 margin-right: 12px;
             `
         };
-        this.checkBoxeLabels = checkBoxeLabels ? checkBoxeLabels : [];
     }
     
     render() {
         this.rootEle.innerHTML = `
         <div>
-            <h3 style="${this.styles['h3']}">${this.rootEle.title}</h3>
+            <h3 style="${this.styles['h3']}">${this.title}</h3>
             <ul style="${this.styles['ul']}">
-                ${this.checkBoxeLabels.map((label) =>
+                ${this.labels.map((label, ) =>
                     `<li style="${this.styles['li']}"><label><input type="checkbox" name="position" value="${label}">${label}</label></li>`
                 ).join('')}
             </ul>
@@ -29,4 +30,4 @@ class CheckBoxSection {
     }
 }
 
-window.customElements.define('check-box-section-comp', CheckBoxSection);
+export default CheckboxSectionComponent;

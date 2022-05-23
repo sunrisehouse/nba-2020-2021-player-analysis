@@ -1,6 +1,10 @@
-class SelectSection {
-    constructor(id, select1Options, select2Options) {
-        this.rootEle = document.getElementById(id);
+class SelectSectionComponent {
+    constructor(element, title1, option1_list, title2, option2_list) {
+        this.rootEle = element;
+        this.title1 = title1;
+        this.option1_list = option1_list;
+        this.title2 = title2;
+        this.option2_list = option2_list;
         this.styles = {
             h3: `
                 font-size: 20px;
@@ -12,10 +16,6 @@ class SelectSection {
                 margin-right: 12px;
             `
         };
-        this.select1Options = select1Options ? select1Options : [];
-        this.select2Options = select2Options ? select2Options : [];
-        this.title1 = this.rootEle.getAttribute('title1');
-        this.title2 = this.rootEle.getAttribute('title2');
     }
     
     render() {
@@ -23,13 +23,13 @@ class SelectSection {
         <div>
             <h3 style="${this.styles['h3']}">${this.title1}</h3>
             <select style="${this.styles['select']}">
-                ${this.select1Options.map(({ label, value }) =>
+                ${this.option1_list.map(({ label, value }) =>
                     `<option style="${this.styles['option']}" value="${value}">${label}</option>`
                 ).join('')}
             </select>
             <h3 style="${this.styles['h3']}">${this.title2}</h3>
             <select style="${this.styles['select']}">
-                ${this.select2Options.map(({ label, value }) =>
+                ${this.option2_list.map(({ label, value }) =>
                     `<option style="${this.styles['option']}" value="${value}">${label}</option>`
                 ).join('')}
             </select>
@@ -38,4 +38,4 @@ class SelectSection {
     }
 }
 
-window.customElements.define('select-section-comp', SelectSection);
+export default SelectSectionComponent;

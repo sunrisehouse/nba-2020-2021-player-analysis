@@ -1,6 +1,7 @@
-class Header {
-    constructor(id) {
-        this.rootEle = document.getElementById(id);
+class HeaderComponent {
+    constructor(element, title) {
+        this.rootEle = element;
+        this.title = title;
         this.styles = {
             header: `
                 width: 100%;
@@ -20,10 +21,10 @@ class Header {
     render() {
         this.rootEle.innerHTML = `
         <div style="${this.styles['header']}">
-            <h1 style="${this.styles['h1']}">${this.rootEle.title}</h1>
+            <h1 style="${this.styles['h1']}">${header.title}</h1>
         </div>
         `
     }
 }
 
-window.customElements.define('header-comp', Header);
+export default HeaderComponent;

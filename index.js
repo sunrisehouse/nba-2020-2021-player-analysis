@@ -1,70 +1,64 @@
-let data, brushedData, scatterplot, histogram, pc, dataTable;
+import MainPage from './page/main-page.js';
 
-function updateScatterplot() {
-    let xVar = d3.select("input[type=radio][name=x-encoding]:checked").property("value");
-    let yVar = d3.select("input[type=radio][name=y-encoding]:checked").property("value");
-    let useColor = d3.select("#use-color").property("checked");
-    scatterplot.update(xVar, yVar, "variety", useColor);
-}
+const page = new MainPage();
 
-function updateHistogram() {
-    histogram.update(brushedData && brushedData.length > 0 ? brushedData : data, "variety");
-}
+// let brushedData, scatterplot, histogram, pc, dataTable;
 
-function updatePC() {
-    pc.update(brushedData && brushedData.length > 0 ? brushedData : data, "variety");
-}
+// function updateScatterplot() {
+//     let xVar = d3.select("input[type=radio][name=x-encoding]:checked").property("value");
+//     let yVar = d3.select("input[type=radio][name=y-encoding]:checked").property("value");
+//     let useColor = d3.select("#use-color").property("checked");
+//     scatterplot.update(xVar, yVar, "variety", useColor);
+// }
 
-function updateDataTable() {
-    dataTable.update(brushedData && brushedData.length > 0 ? brushedData : data, data.columns)
-}
+// function updateHistogram() {
+//     histogram.update(brushedData && brushedData.length > 0 ? brushedData : data, "variety");
+// }
 
-const POSITION = ['PG', 'SG', 'SF', 'PF', 'C'];
-const ATTRIBUTES = ['name', '3G', '2G']
+// function updatePC() {
+//     pc.update(brushedData && brushedData.length > 0 ? brushedData : data, "variety");
+// }
 
-new Header('header').render();
-new CheckBoxSection('position-check-section', POSITION).render();
+// function updateDataTable() {
+//     dataTable.update(brushedData && brushedData.length > 0 ? brushedData : data, data.columns)
+// }
+// d3.csv("./data/nba2021_per_game.csv")
+//     .then(csvData => {
+//         csvData.forEach(d => {
+//             d["petal.length"] = +d["petal.length"];
+//             d["petal.width"] = +d["petal.width"];
+//             d["sepal.length"] = +d["sepal.length"];
+//             d["sepal.width"] = +d["sepal.width"];
+//         });
 
-const selectOptions = ATTRIBUTES.map(name => ({ label: name, value: name }));
-new SelectSection('hor-ver-select-section', selectOptions, selectOptions).render();
+//         data = csvData;
 
-d3.csv("./data/nba2021_per_game.csv")
-    .then(csvData => {
-        csvData.forEach(d => {
-            d["petal.length"] = +d["petal.length"];
-            d["petal.width"] = +d["petal.width"];
-            d["sepal.length"] = +d["sepal.length"];
-            d["sepal.width"] = +d["sepal.width"];
-        });
+//         scatterplot = new Scatterplot("#scatterplot", "#sc-tooltip", data);
+//         scatterplot.initialize();
 
-        data = csvData;
+//         updateScatterplot();
+//         d3.selectAll("input[type=radio][name=x-encoding]").on("change", updateScatterplot);
+//         d3.selectAll("input[type=radio][name=y-encoding]").on("change", updateScatterplot);
+//         d3.selectAll("#use-color").on("change", updateScatterplot);
 
-        scatterplot = new Scatterplot("#scatterplot", "#sc-tooltip", data);
-        scatterplot.initialize();
+//         scatterplot.on("brush", (brushedItems) => {
+//             brushedData = brushedItems;
+//             updateHistogram();
+//             updatePC();
+//             updateDataTable();
+//         });
 
-        updateScatterplot();
-        d3.selectAll("input[type=radio][name=x-encoding]").on("change", updateScatterplot);
-        d3.selectAll("input[type=radio][name=y-encoding]").on("change", updateScatterplot);
-        d3.selectAll("#use-color").on("change", updateScatterplot);
+//         histogram = new Histogram("#histogram");
+//         histogram.initialize();
 
-        scatterplot.on("brush", (brushedItems) => {
-            brushedData = brushedItems;
-            updateHistogram();
-            updatePC();
-            updateDataTable();
-        });
+//         updateHistogram();
 
-        histogram = new Histogram("#histogram");
-        histogram.initialize();
+//         pc = new PC("#pc", data, ["petal.length", "petal.width", "sepal.length", "sepal.width"]);
+//         pc.initialize();
 
-        updateHistogram();
+//         updatePC();
 
-        pc = new PC("#pc", data, ["petal.length", "petal.width", "sepal.length", "sepal.width"]);
-        pc.initialize();
+//         dataTable = new DataTable("#data-table");
 
-        updatePC();
-
-        dataTable = new DataTable("#data-table");
-
-        updateDataTable();
-    })
+//         updateDataTable();
+//     })

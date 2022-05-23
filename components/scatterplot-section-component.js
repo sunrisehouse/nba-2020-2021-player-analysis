@@ -1,20 +1,23 @@
-class Scatterplot {
-    margin = {
-        top: 10, right: 100, bottom: 40, left: 40
-    }
-
-    constructor(svg, tooltip, data, width = 250, height = 250) {
-        this.svg = svg;
-        this.tooltip = tooltip;
-        this.data = data;
-        this.width = width;
-        this.height = height;
+class ScatterplotSectionComponent {
+    constructor(element) {
+        this.margin = {top: 10, right: 100, bottom: 30, left: 40};
+        this.width = 300 - this.margin.left - this.margin.right;
+        this.height = 300 - this.margin.top - this.margin.bottom;
         this.handlers = {};
-    }
 
-    initialize() {
-        this.svg = d3.select(this.svg);
-        this.tooltip = d3.select(this.tooltip);
+        element.innerHTML = `
+            <svg></svg>
+            <div class="tooltip bs-tooltip-top show" id="sc-tooltip" role="tooltip" style="display:none">
+                <div class="tooltip-arrow"></div>
+                <div class="tooltip-inner">
+                    Some tooltip text!
+                </div>
+            </div>
+        `;
+        
+        this.root = d3.select(element);
+        this.svg = this.root.select("svg");
+        this.tooltip = this.root.select("#sc-tooltip")
         this.container = this.svg.append("g");
         this.xAxis = this.svg.append("g");
         this.yAxis = this.svg.append("g");
@@ -22,37 +25,35 @@ class Scatterplot {
 
         this.xScale = d3.scaleLinear();
         this.yScale = d3.scaleLinear();
-        this.zScale = d3.scaleOrdinal().range(d3.schemeCategory10);
-
+        this.zScale = d3.scaleOrdinal().range(d3.schemeCategory10)
         this.svg
             .attr("width", this.width + this.margin.left + this.margin.right)
             .attr("height", this.height + this.margin.top + this.margin.bottom);
-
         this.container.attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
-
         this.brush = d3.brush()
             .extent([[0, 0], [this.width, this.height]])
             .on("start brush", (event) => {
                 this.brushCircles(event);
             })
+        this.container.call(this.brush);
     }
 
-    update(xVar, yVar, colorVar, useColor) {
-        this.xVar = xVar;
-        this.yVar = yVar;
+    setData(data, xLabel, yLabel) {
+        this.data = data;
+        this.xScale.domain(d3.extent(this.data, d => d.x)).range([0, this.width]);
+        this.yScale.domain(d3.extent(this.data, d => d.y)).range([this.height, 0]);
+        this.zScale.domain([...new Set(this.data.map(d => d.z))])
+        this.xLabel = xLabel;
+        this.yLabel = yLabel;
+    }
 
-        this.xScale.domain(d3.extent(this.data, d => d[xVar])).range([0, this.width]);
-        this.yScale.domain(d3.extent(this.data, d => d[yVar])).range([this.height, 0]);
-        this.zScale.domain([...new Set(this.data.map(d => d[colorVar]))])
-
-        this.container.call(this.brush);
-
+    render() {
         this.circles = this.container.selectAll("circle")
-            .data(data)
+            .data(this.data)
             .join("circle")
             .on("mouseover", (e, d) => {
                 this.tooltip.select(".tooltip-inner")
-                    .html(`${this.xVar}: ${d[this.xVar]}<br />${this.yVar}: ${d[this.yVar]}`);
+                    .html(`${this.xLabel}: ${d.x}<br />${this.yLabel}: ${d.y}`);
 
                 Popper.createPopper(e.target, this.tooltip.node(), {
                     placement: 'top',
@@ -74,9 +75,9 @@ class Scatterplot {
 
         this.circles
             .transition()
-            .attr("cx", d => this.xScale(d[xVar]))
-            .attr("cy", d => this.yScale(d[yVar]))
-            .attr("fill", useColor ? d => this.zScale(d[colorVar]) : "black")
+            .attr("cx", d => this.xScale(d.x))
+            .attr("cy", d => this.yScale(d.y))
+            .attr("fill", d => this.zScale(d.z))
             .attr("r", 3)
 
         this.xAxis
@@ -89,22 +90,17 @@ class Scatterplot {
             .transition()
             .call(d3.axisLeft(this.yScale));
 
-        if (useColor) {
-            this.legend
-                .style("display", "inline")
-                .style("font-size", ".8em")
-                .attr("transform", `translate(${this.width + this.margin.left + 10}, ${this.height / 2})`)
-                .call(d3.legendColor().scale(this.zScale))
-        }
-        else {
-            this.legend.style("display", "none");
-        }
+        this.legend
+            .style("display", "inline")
+            .style("font-size", ".8em")
+            .attr("transform", `translate(${this.width + this.margin.left + 10}, ${this.height / 2})`)
+            .call(d3.legendColor().scale(this.zScale))
     }
 
     isBrushed(d, selection) {
         let [[x0, y0], [x1, y1]] = selection; // destructuring assignment
-        let x = this.xScale(d[this.xVar]);
-        let y = this.yScale(d[this.yVar]);
+        let x = this.xScale(d.x);
+        let y = this.yScale(d.y);
 
         return x0 <= x && x <= x1 && y0 <= y && y <= y1;
     }
@@ -123,3 +119,5 @@ class Scatterplot {
         this.handlers[eventType] = handler;
     }
 }
+
+export default ScatterplotSectionComponent;
