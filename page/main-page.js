@@ -30,6 +30,8 @@ class MainPage {
         const datatableCompEle = document.getElementById('datatable-comp');
         this.leftPlayerNameEle = document.getElementById('left-player-name');
         this.rightPlayerNameEle = document.getElementById('right-player-name');
+        this.leftPlayerNameEle.style = `color: ${this.LEFT_COLOR}`;
+        this.rightPlayerNameEle.style = `color: ${this.RIGHT_COLOR}`;
 
         const selectOptions = this.ATTRIBUTES.filter(attr => !this.CATEGORICAL_ATTRIBUTES.includes(attr)).map((name) => ({ label: name, value: name }));
 
