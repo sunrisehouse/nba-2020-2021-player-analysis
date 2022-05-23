@@ -1,7 +1,7 @@
 class RadarchartComponent {
 	constructor(element) {
-		this.margin = 54;
-		this.radius = 140;
+		this.margin = 24;
+		this.radius = 80;
 		this.handlers = {};
 		this.rootEle = element;
 		this.color = 'rgba(255, 0, 0, 0.4)';

@@ -1,6 +1,6 @@
 class ScatterplotComponent {
     constructor(element) {
-        this.margin = {top: 10, right: 100, bottom: 30, left: 40};
+        this.margin = {top: 10, right: 50, bottom: 20, left: 20};
         this.width = 300 - this.margin.left - this.margin.right;
         this.height = 300 - this.margin.top - this.margin.bottom;
         this.handlers = {};

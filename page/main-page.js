@@ -25,6 +25,8 @@ class MainPage {
         const leftRadarchartCompEle = document.getElementById('left-radarchart-comp');
         const rightRadarchartCompEle = document.getElementById('right-radarchart-comp');
         const datatableCompEle = document.getElementById('datatable-comp');
+        this.leftPlayerNameEle = document.getElementById('left-player-name');
+        this.rightPlayerNameEle = document.getElementById('right-player-name');
 
         const selectOptions = this.ATTRIBUTES.map((name) => ({ label: name, value: name }));
 
@@ -150,6 +152,11 @@ class MainPage {
         const data = this.COMPARED_ATTRS.map((attr) => Number(d[labels.findIndex(l => l == attr)]))
             .map((item, idx) => this.getAttrNormDistributionValueFuncs[idx](item));
         this.rendarRadarChart(data, this.isLeftTurn);
+        if (this.isLeftTurn) {
+            this.leftPlayerNameEle.innerText = d[0];
+        } else {
+            this.rightPlayerNameEle.innerText = d[0];
+        }
         this.isLeftTurn = !this.isLeftTurn;
     }
 
