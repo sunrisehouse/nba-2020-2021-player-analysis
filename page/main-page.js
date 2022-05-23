@@ -9,6 +9,11 @@ import DatatableComponent from '../components/datatable-component.js';
 class MainPage {
     POSITION = ['PG', 'SG', 'SF', 'PF', 'C']
     ATTRIBUTES = ['Player', 'Pos', 'Age', 'Tm', 'G', 'GS', 'MP', 'FG', 'FGA', 'FG%', '3P', '3PA', '3P%', '2P', '2PA', '2P%', 'eFG%', 'FT', 'FTA', 'FT%', 'ORB', 'DRB', 'TRB', 'AST', 'STL', 'BLK', 'TOV', 'PF', 'PTS']
+    
+    COMPARED_ATTRS = ['3P%', '2P%', 'AST', 'TRB', 'PTS']
+    selectedHorAttr = '3P';
+    selectedVerAttr = '2P';
+    isLeftTurn = true;
 
     constructor() {
         const headerEle = document.getElementById('header');
@@ -17,12 +22,11 @@ class MainPage {
         const verticalSelectCompEle = document.getElementById('vertical-select-comp');
         const scatterplotCompEle = document.getElementById('scatterplot-comp');
         const boxplotCompEle = document.getElementById('boxplot-comp');
-        const radarchartCompEle = document.getElementById('radarchart-comp');
+        const leftRadarchartCompEle = document.getElementById('left-radarchart-comp');
+        const rightRadarchartCompEle = document.getElementById('right-radarchart-comp');
         const datatableCompEle = document.getElementById('datatable-comp');
 
         const selectOptions = this.ATTRIBUTES.map((name) => ({ label: name, value: name }));
-        this.selectedHorAttr = '3P';
-        this.selectedVerAttr = '2P';
 
         this.headerComp = new HeaderComponent(
             headerEle,
@@ -51,12 +55,17 @@ class MainPage {
         this.boxplotComp = new BoxplotComponent(
             boxplotCompEle,
         );
-        this.radarchartComp = new RadarchartComponent(
-            radarchartCompEle,
+        this.leftRadarchartComp = new RadarchartComponent(
+            leftRadarchartCompEle,
+        );
+        this.rightRadarchartComp = new RadarchartComponent(
+            rightRadarchartCompEle,
         );
         this.datatableComp = new DatatableComponent(
             datatableCompEle,
         );
+        this.datatableComp.setOnHeadClick(() => {});
+        this.datatableComp.setOnRowClick(this.onDataTableRowClick);
 
         this.headerComp.render();
         this.checkboxGroupComp.render();
@@ -78,6 +87,13 @@ class MainPage {
     }
 
     onDataLoaded = () => {
+        this.getAttrNormDistributionValueFuncs = this.COMPARED_ATTRS.map(attr => {
+            const mean = this.data.reduce((acc, cur) => acc + Number(cur[attr]), 0) / this.data.length;
+            const variance = this.data.reduce((acc, cur) => acc + Math.pow(Number(cur[attr]) - mean, 2), 0) / this.data.length;
+            console.log(mean, variance)
+            return this.makeNomalDistribution(mean, Math.sqrt(variance));
+        })
+
         this.filteredData = this.data
             .filter(d => this.POSITION.includes(d['Pos']));
         
@@ -90,7 +106,8 @@ class MainPage {
         const dtLabels = this.makeDtLabels(this.filteredData);
         const dtData = this.makeDtData(this.filteredData);
         this.renderDataTable(dtData, dtLabels);
-        this.rendarRadarChart();
+        this.rendarRadarChart([], true);
+        this.rendarRadarChart([], false);
     }
 
     onChangePosition = () => {
@@ -123,6 +140,13 @@ class MainPage {
 
     }
 
+    onDataTableRowClick = (d, labels) => {
+        const data = this.COMPARED_ATTRS.map((attr) => Number(d[labels.findIndex(l => l == attr)]))
+            .map((item, idx) => this.getAttrNormDistributionValueFuncs[idx](item));
+        this.rendarRadarChart(data, this.isLeftTurn);
+        this.isLeftTurn = !this.isLeftTurn;
+    }
+
     makeScpData = d => d.map(d => ({ x: Number(d[this.selectedHorAttr]), y: Number(d[this.selectedVerAttr]), z: d['Pos'], id: d['Player'] }));
     makeBpData = scpData => scpData.map(td => ({ x: td.z, y: td.y }));
     makeDtLabels = d => d.length > 0 ? Object.keys(d[0]) : [];
@@ -151,9 +175,23 @@ class MainPage {
         this.datatableComp.render();
     }
 
-    rendarRadarChart = (data) => {
-        this.radarchartComp.setData(data);
-        this.radarchartComp.render();
+    rendarRadarChart = (data, isLeft) => {
+        if (isLeft) {
+            this.leftRadarchartComp.setData(data, this.COMPARED_ATTRS);
+            this.leftRadarchartComp.render();
+        } else {
+            this.rightRadarchartComp.setData(data, this.COMPARED_ATTRS);
+            this.rightRadarchartComp.render();
+        }
+    }
+
+    makeNomalDistribution = (m, std) => (x) => {
+        var x = (x - m) / std
+        var t = 1 / (1 + .2315419 * Math.abs(x))
+        var d =.3989423 * Math.exp( -x * x / 2)
+        var prob = d * t * (.3193815 + t * ( -.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))))
+        if( x > 0 ) prob = 1 - prob
+        return prob
     }
 }
 

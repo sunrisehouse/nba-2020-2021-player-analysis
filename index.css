@@ -71,6 +71,7 @@ section {
 .data-table-comp tbody tr {
     border-bottom: 1px solid #dddddd;
     height: 20px;
+    cursor: pointer;
 }
 .data-table-comp tbody tr:hover {
     background-color: #eeeeee;

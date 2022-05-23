@@ -10,6 +10,14 @@ class DatatableComponent {
         this.labels = labels;
     }
 
+    setOnHeadClick = (onHeadClick) => {
+        this.onHeadClick = onHeadClick;
+    }
+
+    setOnRowClick = (onRowClick) => {
+        this.onRowClick = onRowClick;
+    }
+
     render() {
         this.rootEle.innerHTML = `
         <div class="data-table-comp">
@@ -27,6 +35,18 @@ class DatatableComponent {
             </table>
         </div>
         `;
+
+        const theadEle = this.rootEle.getElementsByTagName("thead")[0];
+        const thEles = theadEle.getElementsByTagName("th");
+        for (let i = 0; i < thEles.length; i++) {
+            thEles[i].addEventListener("click", () => this.onRowClick(this.labels[i]));
+        }
+
+        const tbodyEle = this.rootEle.getElementsByTagName("tbody")[0];
+        const trEles = tbodyEle.getElementsByTagName("tr");
+        for (let i = 0; i < trEles.length; i++) {
+            trEles[i].addEventListener("click", () => this.onRowClick(this.data[i], this.labels));
+        }
     }
 }
 
