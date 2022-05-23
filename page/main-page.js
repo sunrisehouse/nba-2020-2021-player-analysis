@@ -104,19 +104,39 @@ class MainPage {
         const checkedPosList = this.checkboxGroupComp.getChecked();
         const filteredData = this.data
             .filter(d => checkedPosList.includes(d['Pos']));
-        this.renderScatterPlot(filteredData, this.selectedHorAttr, this.selectedVerAttr);
+        const scpData = filteredData
+            .map(d => ({ x: Number(d[this.selectedHorAttr]), y: Number(d[this.selectedVerAttr]), z: d['Pos'], id: d['Player'] }));
+        this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
+
+        const bpData = scpData.map(td => ({ x: td.z, y: td.y }));
+        this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
+
+        const dtLabels = filteredData.length > 0 ? Object.keys(filteredData[0]) : [];
+        const dtData = filteredData.map(d => Object.values(d));
+        this.renderDataTable(dtData, dtLabels);
     }
 
-    renderScatterPlot = (filteredData, horAttr, verAttr) => {
-        const data = filteredData
-            .map(d => ({ x: Number(d['3P']), y: Number(d['FG']), z: d['Pos'], id: d['Player'] }));
-        
+    renderScatterPlot = (data, horAttr, verAttr) => {
         this.scatterplotComp.setData(
             data,
             horAttr,
             verAttr,
         );
         this.scatterplotComp.render();
+    }
+    
+    renderBoxPlot = (data, horAttr, verAttr) => {
+        this.boxplotComp.setData(
+            data,
+            horAttr,
+            verAttr,
+        );
+        this.boxplotComp.render();
+    };
+
+    renderDataTable = (data, labels) => {
+        this.datatableComp.setData(data, labels);
+        this.datatableComp.render();
     }
 }
 
