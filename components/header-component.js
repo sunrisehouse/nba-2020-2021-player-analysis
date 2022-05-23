@@ -21,7 +21,7 @@ class HeaderComponent {
     render() {
         this.rootEle.innerHTML = `
         <div style="${this.styles['header']}">
-            <h1 style="${this.styles['h1']}">${header.title}</h1>
+            <h1 style="${this.styles['h1']}">${this.title}</h1>
         </div>
         `
     }
