@@ -25,7 +25,6 @@ class CheckboxGroupComponent {
     }
     
     render = () => {
-        console.log(this.initialValues.includes('PG'))
         this.rootEle.innerHTML = `
             <ul style="${this.styles['ul']}">
                 ${this.labels.map((label) =>

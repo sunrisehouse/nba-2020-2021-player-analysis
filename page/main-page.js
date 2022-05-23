@@ -101,7 +101,6 @@ class MainPage {
         this.getAttrNormDistributionValueFuncs = this.COMPARED_ATTRS.map(attr => {
             const mean = this.data.reduce((acc, cur) => acc + Number(cur[attr]), 0) / this.data.length;
             const variance = this.data.reduce((acc, cur) => acc + Math.pow(Number(cur[attr]) - mean, 2), 0) / this.data.length;
-            console.log(mean, variance)
             return this.makeNomalDistribution(mean, Math.sqrt(variance));
         })
 

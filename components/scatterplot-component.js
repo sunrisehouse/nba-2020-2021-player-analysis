@@ -80,7 +80,9 @@ class ScatterplotComponent {
             })
             .on("mouseout", (d) => {
                 tooltip.style("display", "none");
-            })
+            });
+
+        this.circles
             .transition()
             .attr("cx", d => this.xScale(d.x))
             .attr("cy", d => this.yScale(d.y))
