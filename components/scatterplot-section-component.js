@@ -4,8 +4,17 @@ class ScatterplotSectionComponent {
         this.width = 300 - this.margin.left - this.margin.right;
         this.height = 300 - this.margin.top - this.margin.bottom;
         this.handlers = {};
+        this.rootEle = element;
+    }
 
-        element.innerHTML = `
+    setData(data, xLabel, yLabel) {
+        this.data = data;
+        this.xLabel = xLabel;
+        this.yLabel = yLabel;
+    }
+
+    render() {
+        this.rootEle.innerHTML = `
             <svg></svg>
             <div class="tooltip bs-tooltip-top show" id="sc-tooltip" role="tooltip" style="display:none">
                 <div class="tooltip-arrow"></div>
@@ -15,62 +24,56 @@ class ScatterplotSectionComponent {
             </div>
         `;
         
-        this.root = d3.select(element);
-        this.svg = this.root.select("svg");
-        this.tooltip = this.root.select("#sc-tooltip")
-        this.container = this.svg.append("g");
-        this.xAxis = this.svg.append("g");
-        this.yAxis = this.svg.append("g");
-        this.legend = this.svg.append("g");
-
-        this.xScale = d3.scaleLinear();
-        this.yScale = d3.scaleLinear();
-        this.zScale = d3.scaleOrdinal().range(d3.schemeCategory10)
-        this.svg
-            .attr("width", this.width + this.margin.left + this.margin.right)
-            .attr("height", this.height + this.margin.top + this.margin.bottom);
-        this.container.attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
-        this.brush = d3.brush()
+        const root = d3.select(this.rootEle);
+        const svg = root.select("svg");
+        const tooltip = root.select("#sc-tooltip")
+        const container = svg.append("g");
+        const xAxis = svg.append("g");
+        const yAxis = svg.append("g");
+        const legend = svg.append("g");
+        const brush = d3.brush()
             .extent([[0, 0], [this.width, this.height]])
             .on("start brush", (event) => {
                 this.brushCircles(event);
             })
-        this.container.call(this.brush);
-    }
 
-    setData(data, xLabel, yLabel) {
-        this.data = data;
-        this.xScale.domain(d3.extent(this.data, d => d.x)).range([0, this.width]);
-        this.yScale.domain(d3.extent(this.data, d => d.y)).range([this.height, 0]);
-        this.zScale.domain([...new Set(this.data.map(d => d.z))])
-        this.xLabel = xLabel;
-        this.yLabel = yLabel;
-    }
+        this.xScale = d3.scaleLinear()
+            .domain(d3.extent(this.data, d => d.x))
+            .range([0, this.width]);
+        this.yScale = d3.scaleLinear()
+            .domain(d3.extent(this.data, d => d.y))
+            .range([this.height, 0]);
+        this.zScale = d3.scaleOrdinal()
+            .range(d3.schemeCategory10)
+            .domain([...new Set(this.data.map(d => d.z))]);
+        svg
+            .attr("width", this.width + this.margin.left + this.margin.right)
+            .attr("height", this.height + this.margin.top + this.margin.bottom);
+        container.attr("transform", `translate(${this.margin.left}, ${this.margin.top})`);
+        
+        container.call(brush);
 
-    render() {
-        this.circles = this.container.selectAll("circle")
+        this.circles = container.selectAll("circle")
             .data(this.data)
             .join("circle")
             .on("mouseover", (e, d) => {
-                this.tooltip.select(".tooltip-inner")
+                tooltip.select(".tooltip-inner")
                     .html(`${this.xLabel}: ${d.x}<br />${this.yLabel}: ${d.y}`);
-
-                Popper.createPopper(e.target, this.tooltip.node(), {
+                Popper.createPopper(e.target, tooltip.node(), {
                     placement: 'top',
                     modifiers: [
                         {
                             name: 'arrow',
                             options: {
-                                element: this.tooltip.select(".tooltip-arrow").node(),
+                                element: tooltip.select(".tooltip-arrow").node(),
                             },
                         },
                     ],
                 });
-
-                this.tooltip.style("display", "block");
+                tooltip.style("display", "block");
             })
             .on("mouseout", (d) => {
-                this.tooltip.style("display", "none");
+                tooltip.style("display", "none");
             });
 
         this.circles
@@ -80,17 +83,17 @@ class ScatterplotSectionComponent {
             .attr("fill", d => this.zScale(d.z))
             .attr("r", 3)
 
-        this.xAxis
+        xAxis
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top + this.height})`)
             .transition()
             .call(d3.axisBottom(this.xScale));
 
-        this.yAxis
+        yAxis
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
             .transition()
             .call(d3.axisLeft(this.yScale));
 
-        this.legend
+        legend
             .style("display", "inline")
             .style("font-size", ".8em")
             .attr("transform", `translate(${this.width + this.margin.left + 10}, ${this.height / 2})`)
