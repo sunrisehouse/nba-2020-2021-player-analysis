@@ -34,7 +34,7 @@ class ScatterplotComponent {
 
         this.xScale = d3.scaleLinear()
             .domain(d3.extent(this.data, d => d.x))
-            .range([0, this.width]);
+            .range([0, this.width])
         this.yScale = d3.scaleLinear()
             .domain(d3.extent(this.data, d => d.y))
             .range([this.height, 0]);

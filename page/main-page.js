@@ -81,9 +81,16 @@ class MainPage {
         this.filteredData = this.data
             .filter(d => this.POSITION.includes(d['Pos']));
         
-        this.renderAll();
-        this.radarchartComp.setData();
-        this.radarchartComp.render();
+        const scpData = this.makeScpData(this.filteredData);
+        this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
+
+        const bpData = this.makeBpData(scpData);
+        this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
+
+        const dtLabels = this.makeDtLabels(this.filteredData);
+        const dtData = this.makeDtData(this.filteredData);
+        this.renderDataTable(dtData, dtLabels);
+        this.rendarRadarChart();
     }
 
     onChangePosition = () => {
@@ -91,31 +98,35 @@ class MainPage {
         this.filteredData = this.data
             .filter(d => checkedPosList.includes(d['Pos']));
 
-        this.renderAll();
+        const scpData = this.makeScpData(this.filteredData);
+        this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
+
+        const bpData = this.makeBpData(scpData);
+        this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
+
+        const dtLabels = this.makeDtLabels(this.filteredData);
+        const dtData = this.makeDtData(this.filteredData);
+        this.renderDataTable(dtData, dtLabels);
     }
 
     onChangeHorVerSelect = () => {
         this.selectedHorAttr = this.horizontalSelectComp.getSelected();
         this.selectedVerAttr = this.verticalSelectComp.getSelected();
-        this.renderAll();
+        const scpData = this.makeScpData(this.filteredData);
+        this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
+
+        const bpData = this.makeBpData(scpData);
+        this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
     }
 
     onBrushScatterPlot = (d) => {
 
     }
 
-    renderAll = () => {
-        const scpData = this.filteredData
-            .map(d => ({ x: Number(d[this.selectedHorAttr]), y: Number(d[this.selectedVerAttr]), z: d['Pos'], id: d['Player'] }));
-        this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
-
-        const bpData = scpData.map(td => ({ x: td.z, y: td.y }));
-        this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
-
-        const dtLabels = this.filteredData.length > 0 ? Object.keys(this.filteredData[0]) : [];
-        const dtData = this.filteredData.map(d => Object.values(d));
-        this.renderDataTable(dtData, dtLabels);
-    }
+    makeScpData = d => d.map(d => ({ x: Number(d[this.selectedHorAttr]), y: Number(d[this.selectedVerAttr]), z: d['Pos'], id: d['Player'] }));
+    makeBpData = scpData => scpData.map(td => ({ x: td.z, y: td.y }));
+    makeDtLabels = d => d.length > 0 ? Object.keys(d[0]) : [];
+    makeDtData = d => d.map(d => Object.values(d));
 
     renderScatterPlot = (data, horAttr, verAttr) => {
         this.scatterplotComp.setData(
@@ -138,6 +149,11 @@ class MainPage {
     renderDataTable = (data, labels) => {
         this.datatableComp.setData(data, labels);
         this.datatableComp.render();
+    }
+
+    rendarRadarChart = (data) => {
+        this.radarchartComp.setData(data);
+        this.radarchartComp.render();
     }
 }
 
