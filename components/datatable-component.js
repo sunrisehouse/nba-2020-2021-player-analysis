@@ -12,18 +12,20 @@ class DatatableComponent {
 
     render() {
         this.rootEle.innerHTML = `
-        <table>
-            <thead>
-                <tr>
-                    ${this.labels.map(l => `<th>${l}</th>`).join('')}
-                </tr>
-            </thead>
-            <tbody>
-                ${this.data.map(d =>
-                    `<tr>${d.map(i => `<td>${i}</td>`).join('')}</tr>`
-                ).join('')}
-            </tbody>
-        </table>
+        <div class="data-table-comp">
+            <table>
+                <thead>
+                    <tr>
+                        ${this.labels.map(l => `<th>${l}</th>`).join('')}
+                    </tr>
+                </thead>
+                <tbody>
+                    ${this.data.map(d =>
+                        `<tr>${d.map(i => `<td>${i}</td>`).join('')}</tr>`
+                    ).join('')}
+                </tbody>
+            </table>
+        </div>
         `;
     }
 }
