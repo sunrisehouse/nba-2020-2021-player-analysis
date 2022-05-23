@@ -1,6 +1,6 @@
 class BoxplotComponent {
     constructor(element) {
-        this.margin = {top: 10, right: 50, bottom: 20, left: 20};
+        this.margin = {top: 16, right: 50, bottom: 20, left: 40};
         this.width = 300 - this.margin.left - this.margin.right;
         this.height = 300 - this.margin.top - this.margin.bottom;
         this.handlers = {};
@@ -135,7 +135,23 @@ class BoxplotComponent {
             .style("display", "inline")
             .style("font-size", ".8em")
             .attr("transform", `translate(${this.width + this.margin.left + 10}, ${this.height / 2})`)
-            .call(d3.legendColor().scale(this.zScale))
+            .call(d3.legendColor().scale(this.zScale));
+        
+        const xAxisLabel = svg
+            .append("text")
+            .attr("transform", `translate(${this.margin.left + this.width + 12}, ${this.margin.top + this.height + 16})`)
+            .attr("text-anchor", "start")
+            .attr("font-size", "14px")
+            .attr("font-weight", "bold")
+            .text(`${this.xLabel}`);
+
+        const yAxisLabel = svg
+            .append("text")
+            .attr("transform", `translate(${this.margin.left}, ${this.margin.top - 4})`)
+            .attr("text-anchor", "end")
+            .attr("font-size", "14px")
+            .attr("font-weight", "bold")
+            .text(`${this.yLabel}`);
     }
 }
 

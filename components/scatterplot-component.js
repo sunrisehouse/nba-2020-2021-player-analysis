@@ -1,6 +1,6 @@
 class ScatterplotComponent {
     constructor(element) {
-        this.margin = {top: 10, right: 50, bottom: 20, left: 20};
+        this.margin = {top: 16, right: 50, bottom: 20, left: 40};
         this.width = 300 - this.margin.left - this.margin.right;
         this.height = 300 - this.margin.top - this.margin.bottom;
         this.handlers = {};
@@ -11,6 +11,10 @@ class ScatterplotComponent {
         this.data = data;
         this.xLabel = xLabel;
         this.yLabel = yLabel;
+    }
+
+    setOnCircleClicked = (onCircleClicked) => {
+        this.onCircleClicked = onCircleClicked;
     }
 
     render() {
@@ -26,11 +30,6 @@ class ScatterplotComponent {
         
         const root = d3.select(this.rootEle);
         const tooltip = root.select("#sc-tooltip")
-        const brush = d3.brush()
-            .extent([[0, 0], [this.width, this.height]])
-            .on("start brush", (event) => {
-                this.brushCircles(event);
-            })
 
         this.xScale = d3.scaleLinear()
             .domain(d3.extent(this.data, d => d.x))
@@ -48,7 +47,6 @@ class ScatterplotComponent {
 
         const container = svg.append("g")
             .attr("transform", `translate(${this.margin.left}, ${this.margin.top})`)
-            .call(brush);
 
         this.circles = container.selectAll("circle")
             .data(this.data)
@@ -80,7 +78,8 @@ class ScatterplotComponent {
             })
             .on("mouseout", (d) => {
                 tooltip.style("display", "none");
-            });
+            })
+            .on("click", (e, d) => this.onCircleClicked(e, d, [this.xLabel, this.yLabel]));
 
         this.circles
             .transition()
@@ -104,6 +103,22 @@ class ScatterplotComponent {
             .style("font-size", ".8em")
             .attr("transform", `translate(${this.width + this.margin.left + 10}, ${this.height / 2})`)
             .call(d3.legendColor().scale(this.zScale))
+        
+        const xAxisLabel = svg
+            .append("text")
+            .attr("transform", `translate(${this.margin.left + this.width + 12}, ${this.margin.top + this.height + 16})`)
+            .attr("text-anchor", "start")
+            .attr("font-size", "14px")
+            .attr("font-weight", "bold")
+            .text(`${this.xLabel}`);
+
+        const yAxisLabel = svg
+            .append("text")
+            .attr("transform", `translate(${this.margin.left}, ${this.margin.top - 4})`)
+            .attr("text-anchor", "end")
+            .attr("font-size", "14px")
+            .attr("font-weight", "bold")
+            .text(`${this.yLabel}`);
     }
 
     isBrushed(d, selection) {

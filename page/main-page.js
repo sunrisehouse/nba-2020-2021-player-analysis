@@ -56,7 +56,7 @@ class MainPage {
         this.scatterplotComp = new ScatterplotComponent(
             scatterplotCompEle,
         );
-        this.scatterplotComp.on("brush", this.onBrushScatterPlot);
+        this.scatterplotComp.setOnCircleClicked(this.onScatterPlotCircleClicked);
         this.boxplotComp = new BoxplotComponent(
             boxplotCompEle,
         );
@@ -110,7 +110,8 @@ class MainPage {
         const scpData = this.makeScpData(this.posFilteredData);
         this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
 
-        const bpData = this.makeBpData(scpData);
+        const bpData = this.makeBpData(this.posFilteredData);
+        console.log(bpData)
         this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
 
         const dtLabels = this.makeDtLabels(this.posFilteredData);
@@ -128,7 +129,7 @@ class MainPage {
         const scpData = this.makeScpData(this.posFilteredData);
         this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
 
-        const bpData = this.makeBpData(scpData);
+        const bpData = this.makeBpData(this.posFilteredData);
         this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
 
         const dtLabels = this.makeDtLabels(this.posFilteredData);
@@ -142,19 +143,32 @@ class MainPage {
         const scpData = this.makeScpData(this.posFilteredData);
         this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
 
-        const bpData = this.makeBpData(scpData);
+        const bpData = this.makeBpData(this.posFilteredData);
         this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
     }
 
-    onBrushScatterPlot = (brushedPoints) => {
-        const brushedPlayer = brushedPoints.map(p => p.id);
-        const brushedData = this.data
-            .filter(d => brushedPlayer.includes(d['Player']));
-
-        const dtLabels = this.makeDtLabels(brushedData);
-        const dtData = this.makeDtData(brushedData);
-        this.renderDataTable(dtData, dtLabels);
+    onScatterPlotCircleClicked = (_, clickedData) => {
+        const d = this.posFilteredData.find(d => d.Player == clickedData.id);
+        const data = this.COMPARED_ATTRS.map((attr) => Number(d[attr]))
+            .map((item, idx) => this.getAttrNormDistributionValueFuncs[idx](item));
+        this.rendarRadarChart(data, this.isLeftTurn);
+        if (this.isLeftTurn) {
+            this.leftPlayerNameEle.innerText = clickedData.id;
+        } else {
+            this.rightPlayerNameEle.innerText = clickedData.id;
+        }
+        this.isLeftTurn = !this.isLeftTurn;
     }
+
+    // onBrushScatterPlot = (brushedPoints) => {
+    //     const brushedPlayer = brushedPoints.map(p => p.id);
+    //     const brushedData = this.data
+    //         .filter(d => brushedPlayer.includes(d['Player']));
+
+    //     const dtLabels = this.makeDtLabels(brushedData);
+    //     const dtData = this.makeDtData(brushedData);
+    //     this.renderDataTable(dtData, dtLabels);
+    // }
 
     onDataTableRowClick = (d, labels) => {
         const data = this.COMPARED_ATTRS.map((attr) => Number(d[labels.findIndex(l => l == attr)]))
@@ -169,7 +183,7 @@ class MainPage {
     }
 
     makeScpData = d => d.map(d => ({ x: Number(d[this.selectedHorAttr]), y: Number(d[this.selectedVerAttr]), z: d['Pos'], id: d['Player'] }));
-    makeBpData = scpData => scpData.map(td => ({ x: td.z, y: td.y }));
+    makeBpData = d => d.map(d => ({ x: d['Pos'], y: Number(d['3P%']) + Number(d['2P%']) + Number(d['TRB']) + Number(d['STL'])*0.5 + Number(d['BLK'])*0.5 }));
     makeDtLabels = d => d.length > 0 ? Object.keys(d[0]) : [];
     makeDtData = d => d.map(d => Object.values(d));
 
@@ -182,11 +196,11 @@ class MainPage {
         this.scatterplotComp.render();
     }
     
-    renderBoxPlot = (data, horAttr, verAttr) => {
+    renderBoxPlot = (data) => {
         this.boxplotComp.setData(
             data,
-            horAttr,
-            verAttr,
+            "Pos",
+            "PER",
         );
         this.boxplotComp.render();
     };
