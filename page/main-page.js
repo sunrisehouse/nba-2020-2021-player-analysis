@@ -104,17 +104,17 @@ class MainPage {
             return this.makeNomalDistribution(mean, Math.sqrt(variance));
         })
 
-        this.filteredData = this.data
+        this.posFilteredData = this.data
             .filter(d => this.POSITION.includes(d['Pos']));
         
-        const scpData = this.makeScpData(this.filteredData);
+        const scpData = this.makeScpData(this.posFilteredData);
         this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
 
         const bpData = this.makeBpData(scpData);
         this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
 
-        const dtLabels = this.makeDtLabels(this.filteredData);
-        const dtData = this.makeDtData(this.filteredData);
+        const dtLabels = this.makeDtLabels(this.posFilteredData);
+        const dtData = this.makeDtData(this.posFilteredData);
         this.renderDataTable(dtData, dtLabels);
         this.rendarRadarChart([], true);
         this.rendarRadarChart([], false);
@@ -122,32 +122,38 @@ class MainPage {
 
     onChangePosition = () => {
         const checkedPosList = this.checkboxGroupComp.getChecked();
-        this.filteredData = this.data
+        this.posFilteredData = this.data
             .filter(d => checkedPosList.includes(d['Pos']));
 
-        const scpData = this.makeScpData(this.filteredData);
+        const scpData = this.makeScpData(this.posFilteredData);
         this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
 
         const bpData = this.makeBpData(scpData);
         this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
 
-        const dtLabels = this.makeDtLabels(this.filteredData);
-        const dtData = this.makeDtData(this.filteredData);
+        const dtLabels = this.makeDtLabels(this.posFilteredData);
+        const dtData = this.makeDtData(this.posFilteredData);
         this.renderDataTable(dtData, dtLabels);
     }
 
     onChangeHorVerSelect = () => {
         this.selectedHorAttr = this.horizontalSelectComp.getSelected();
         this.selectedVerAttr = this.verticalSelectComp.getSelected();
-        const scpData = this.makeScpData(this.filteredData);
+        const scpData = this.makeScpData(this.posFilteredData);
         this.renderScatterPlot(scpData, this.selectedHorAttr, this.selectedVerAttr);
 
         const bpData = this.makeBpData(scpData);
         this.renderBoxPlot(bpData, this.selectedHorAttr, this.selectedVerAttr);
     }
 
-    onBrushScatterPlot = (d) => {
+    onBrushScatterPlot = (brushedPoints) => {
+        const brushedPlayer = brushedPoints.map(p => p.id);
+        const brushedData = this.data
+            .filter(d => brushedPlayer.includes(d['Player']));
 
+        const dtLabels = this.makeDtLabels(brushedData);
+        const dtData = this.makeDtData(brushedData);
+        this.renderDataTable(dtData, dtLabels);
     }
 
     onDataTableRowClick = (d, labels) => {
